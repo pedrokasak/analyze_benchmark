@@ -1,8 +1,7 @@
 import json
 import os
 from datetime import datetime
-from dotenv import load_dotenv, dotenv_values
-from googletrans import Translator
+from dotenv import load_dotenv
 
 import yfinance as yf
 
@@ -15,7 +14,6 @@ from langchain_community.tools import DuckDuckGoSearchResults
 import streamlit as st
 
 load_dotenv()
-translator = Translator()
 
 def fetch_stock_price(ticket):
     stock = yf.download(ticket, start="2020-08-08", end="2024-08-08")
@@ -153,5 +151,4 @@ if submit_button:
         results = crew.kickoff(inputs={"ticket": topic})
 
         st.subheader("Results of research:")
-        translated = translator.translate(src='en', dest='pt', text=results["final_output"])
-        st.write(translated)
+        st.write(results["final_output"])
