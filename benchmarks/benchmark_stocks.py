@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import datetime
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 
 import yfinance as yf
 
@@ -15,6 +15,7 @@ import streamlit as st
 
 load_dotenv()
 
+
 def fetch_stock_price(ticket):
     stock = yf.download(ticket, start="2020-08-08", end="2024-08-08")
     return stock
@@ -26,7 +27,8 @@ yahoo_finance_tool = Tool(
     func=lambda ticket: fetch_stock_price(ticket),
 )
 # IMPORTANDO OPENAI LLM - GPT
-os.environ["OPENAI_API_KEY"] = st.secrets['OPENAI_API_KEY']
+os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+
 llm = ChatOpenAI(
     model="gpt-3.5-turbo",
 )
