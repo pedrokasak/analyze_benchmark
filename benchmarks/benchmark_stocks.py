@@ -2,6 +2,7 @@ import json
 import os
 from datetime import datetime
 from dotenv import load_dotenv, dotenv_values
+from googletrans import Translator
 
 import yfinance as yf
 
@@ -14,6 +15,7 @@ from langchain_community.tools import DuckDuckGoSearchResults
 import streamlit as st
 
 load_dotenv()
+translator = Translator()
 
 def fetch_stock_price(ticket):
     stock = yf.download(ticket, start="2020-08-08", end="2024-08-08")
@@ -27,7 +29,6 @@ yahoo_finance_tool = Tool(
 )
 # IMPORTANDO OPENAI LLM - GPT
 os.environ["OPENAI_API_KEY"] = st.secrets['OPENAI_API_KEY']
-# os.getenv("OPENAI_API_KEY")
 llm = ChatOpenAI(
     model="gpt-3.5-turbo",
 )
@@ -152,4 +153,5 @@ if submit_button:
         results = crew.kickoff(inputs={"ticket": topic})
 
         st.subheader("Results of research:")
-        st.write(results["final_output"])
+        translated = translator.translate(src='en', dest='pt', text=results["final_output"])
+        st.write(translated)
