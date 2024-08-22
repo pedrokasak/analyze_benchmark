@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from datetime import datetime
 from dotenv import load_dotenv, dotenv_values
 
@@ -155,8 +156,6 @@ crew = Crew(
 
 # results = crew.kickoff(inputs={"ticket": "AAPL"})
 
-
-# Função para extrair o Fear/Greed Score
 def extract_fear_greed_score(final_output):
     # Divide o texto em linhas
     lines = final_output.split("\n")
@@ -171,18 +170,6 @@ def extract_fear_greed_score(final_output):
                 pass
     return None
 
-
-# Exemplo de uso
-final_output = """
-AAPL
-Resumo baseado nas notícias...
-TREND PREDICTION: UP
-FEAR/GREED SCORE: 75
-"""
-
-score = extract_fear_greed_score(final_output)
-print(score)  # Deve imprimir 75
-
 with st.sidebar:
     st.header("Enter the Stock to Research")
 
@@ -196,6 +183,9 @@ if submit_button:
         results = crew.kickoff(inputs={"ticket": topic})
 
         st.subheader("Results of research:")
+        with st.spinner('Wait for it...'):
+            time.sleep(5)
+        st.success("Done!")
         st.write(results["final_output"])
 
         stock_data = fetch_stock_price(topic)
@@ -203,25 +193,29 @@ if submit_button:
         if not stock_data.empty:
             # Interface do usuário usando Streamlit
             st.title("Previsão de Preços de Ações")
-            st.subheader("Preço Histórico da Ação")
+            st.subheader("Preço Histórico da Ação em U$")
             st.line_chart(stock_data["Close"])
 
             st.subheader("Previsão de Preços Futuros")
             forecast = predict_stock_price(stock_data)
             st.line_chart(forecast[["ds", "yhat"]].set_index("ds"))
-            # Extraia o Fear/Greed Score do resultado
-            fear_greed_score = extract_fear_greed_score(results["final_output"])
 
-            # Verifica se o score foi extraído com sucesso
-            if fear_greed_score is not None:
-                # Use st.feedback para mostrar o score
-                st.feedback(
-                    label=f"Fear/Greed Score for {topic}",
-                    value=fear_greed_score,
-                    min_value=0,
-                    max_value=100,
-                )
-            else:
-                st.error("Não foi possível extrair o Fear/Greed Score.")
+            # Extraia o Fear/Greed Score do resultado
+            # score = extract_fear_greed_score(results["final_output"])
+            # fear_greed_score = extract_fear_greed_score(75)
+            #
+            # print('fear_greed_score', fear_greed_score)
+            #
+            # # Verifica se o score foi extraído com sucesso
+            # if fear_greed_score is not None:
+            #     # Use st.feedback para mostrar o score
+            #     st.feedback(
+            #         label=f"Fear/Greed Score for {topic}",
+            #         value=fear_greed_score,
+            #         min_value=0,
+            #         max_value=100,
+            #     )
+            # else:
+            #     st.error("Não foi possível extrair o Fear/Greed Score.")
         else:
-            st.error("Não foi possível obter dados para o ticket fornecido.")
+            st.error(f"Não foi possível obter dados para o ticket {topic} fornecido.")
