@@ -76,7 +76,7 @@ greenlet==3.0.3
 grpc-google-iam-v1==0.13.1
 grpcio==1.64.3
 grpcio-status==1.62.3
-h11==0.14.0
+#h11==0.14.0
 h2==3.2.0
 holidays==0.55
 hpack==3.0.0
